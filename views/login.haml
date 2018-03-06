@@ -1,0 +1,14 @@
+%html
+  %head
+    %title Login - Pickup Games
+  %body
+    #content
+      %table
+        %tr
+          %td
+            %form{name: 'login', method: 'post'}
+              %label{for: 'email'} E-mail
+              %input{type: 'text', name: 'email'}
+              %label{for: 'password'} Password
+              %input{type: 'password', name: 'password'}
+              %input{type: 'submit', value: 'Login'}

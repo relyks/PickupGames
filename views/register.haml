@@ -1,0 +1,16 @@
+%html
+  %head
+    %title Register - Pickup Games
+  %body
+    #content
+      %table
+        %tr
+          %td
+            %form{name: 'register', method: 'post'}
+              %label{for: 'email'} E-mail
+              %input{type: 'text', name: 'email'}
+              %label{for: 'password'} Password
+              %input{type: 'password', name: 'password'}
+              %label{for: 'school'} School
+              %input{type: 'text', name: 'school'}
+              %input{type: 'submit', value: 'Register'}
