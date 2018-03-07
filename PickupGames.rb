@@ -1,23 +1,20 @@
 require 'sinatra/base'
+require 'pstore'
 
 class AuthenticationMiddleware < Sinatra::Base
   enable(:sessions)
 
-  get('/main') do
-    haml(:main)
-  end
-
-  get('/register') do
+  get('/register/?') do
     haml(:register)
   end
 
-  post('/register') do
+  post('/register/?') do
     $password = params['password']
     $email = params['email']
     'You have registered!'
   end
 
-  post('/login') do
+  post('/login/?') do
     if params['password'] == $password and
        params['email'] == $email
       session[:admin] = params['email']
@@ -27,12 +24,22 @@ class AuthenticationMiddleware < Sinatra::Base
     end
   end
 
-  get('/login') do
+  get('/login/?') do
     haml(:login)
+  end
+
+  not_found do
+    redirect('/main')
   end
 end
 
-class PickupGamesApplication < Sinatra::Base
+class FormController < Sinatra::Base
+  get('/form') do
+    'Yessssss'
+  end
+end
+
+class PickupGamesApplicationController < Sinatra::Base
   use AuthenticationMiddleware
 
   before do
@@ -45,24 +52,33 @@ class PickupGamesApplication < Sinatra::Base
     redirect('/main')
   end
 
-  get('/some_love') do
+  get('/main/?') do
+    haml(:main)
+  end
+
+  get('/some_love/?') do
     'You made it!'
   end
+end
 
-  not_found do
-    redirect('/main')
+class PickupGamesApplication < Sinatra::Base
+  use PickupGamesApplicationController
+  ######
+  use FormController
+  get('/app') do
+    'Am I logged in?'
+  end
+end
+
+class UserManager
+
+  def self.createNewUser(username, password, school)
+    
   end
 
-  # helpers do
-  #   def is_application_path?(path)
-  #     puts path
-  #     puts Sinatra::Application.routes
-  #     Sinatra::Application.routes
-  #                         .map { |_, paths| paths }
-  #                         .flatten
-  #                         .include?(path)
-  #   end
-  # end
+  def self.userShouldBeAccepted?(username, password)
+
+  end
 end
 
 PickupGamesApplication.run!
