@@ -3,10 +3,19 @@
     %title Login - Pickup Games
   %body
     #content
+      - unless @error.nil?
+        #error
+          %strong
+            - case @error
+            - when :INVALID
+              = "Incorrect username or password. Try again."
+            - when :UNAUTHORIZED
+              = "You need to be logged in to access that."
+        %br
       %table
         %tr
           %td
-            %form{name: 'login', method: 'post'}
+            %form{name: 'login', method: 'post', action: '/login'}
               %label{for: 'email'} E-mail
               %input{type: 'text', name: 'email'}
               %label{for: 'password'} Password

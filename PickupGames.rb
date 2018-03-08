@@ -1,31 +1,56 @@
 require 'sinatra/base'
-require 'pstore'
 
 class AuthenticationMiddleware < Sinatra::Base
   enable(:sessions)
+  set(:bind, '0.0.0.0')
 
   get('/register/?') do
     haml(:register)
   end
 
   post('/register/?') do
-    UserManager.createNewUser(params['email'],
-                              params['password'],
-                              params['school'])
-    redirect('/main')
+    if UserManager.userIsAlreadyRegistered?(username: params['email'])
+      redirect('/register/error')
+    else
+      UserManager.createNewUser(username: params['email'],
+                                password: params['password'],
+                                school:   params['school'])
+      redirect('/login')
+    end
+  end
+
+  get('/register/error/?') do
+    @error = :ERROR
+    haml(:register)
   end
 
   post('/login/?') do
-    if UserManager.userShouldBeAccepted?(params['email'], params['password'])
+    if UserManager.userShouldBeAccepted?(username: params['email'],
+                                         password: params['password'])
       session[:user] = params['email']
       redirect('/all_users')
     else
-      redirect('/login')
+      redirect('/login/invalid')
     end
   end
 
   get('/login/?') do
     haml(:login)
+  end
+
+  get('/login/invalid/?') do
+    @error = :INVALID
+    haml(:login)
+  end
+
+  get('/login/unauthorized/?') do
+    @error = :UNAUTHORIZED
+    haml(:login)
+  end
+
+  get('/logout/?') do
+    session.delete(:user)
+    redirect('/main')
   end
 
   get('/main/?') do
@@ -38,7 +63,7 @@ class PickupGamesApplicationController < Sinatra::Base
 
   before do
     if session[:user].nil? and request.path != '/'
-      redirect('/login')
+      redirect('/login/unauthorized')
     end
   end
 
@@ -48,13 +73,13 @@ class PickupGamesApplicationController < Sinatra::Base
 
   get('/all_users/?') do
     @users = UserManager.getAllUsers
-    puts @users
     haml(:all_users)
   end
 end
 
 class PickupGamesApplication < Sinatra::Base
   use PickupGamesApplicationController
+  # put other controllers here
 end
 
 User = Struct.new(:username, :password, :school)
@@ -66,21 +91,21 @@ class UserManager
     nil
   end
 
-  def self.createNewUser(username, password, school)
+  def self.userIsAlreadyRegistered?(username:)
+    @@users.keys.include?(username)
+  end
+
+  def self.createNewUser(username:, password:, school:)
     @@users[username] = User.new(username, password, school)
   end
 
-  def self.userShouldBeAccepted?(username, password)
+  def self.userShouldBeAccepted?(username:, password:)
     @@users.has_key?(username) and
       @@users[username].password == password
   end
 
   def self.getAllUsers
-    users = []
-    for (email, user) in @@users
-      users.push({email: email, password: user.password})
-    end
-    users
+    @@users.map { |email, user| { email: email, password: user.password } }
   end
 end
 

@@ -3,10 +3,16 @@
     %title Register - Pickup Games
   %body
     #content
+      - unless @error.nil?
+        #error
+          %strong
+            - if @error == :ERROR
+              = "Username already registered."
+        %br
       %table
         %tr
           %td
-            %form{name: 'register', method: 'post'}
+            %form{name: 'register', method: 'post', action: '/register'}
               %label{for: 'email'} E-mail
               %input{type: 'text', name: 'email'}
               %label{for: 'password'} Password
