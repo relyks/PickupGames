@@ -6,7 +6,11 @@ class AuthenticationMiddleware < Sinatra::Base
   set(:bind, '0.0.0.0')
 
   before do
-    cache_control(:no_cache)
+    cache_control(:private,
+                  :no_cache,
+                  :no_store,
+                  :must_revalidate,
+                  max_age: 0)
   end
 
   get('/register/?') do
@@ -72,6 +76,11 @@ class PickupGamesApplicationController < Sinatra::Base
   use AuthenticationMiddleware
 
   before do
+    cache_control(:private,
+                  :no_cache,
+                  :no_store,
+                  :must_revalidate,
+                  max_age: 0)
     if session[:user].nil? and request.path != '/'
       redirect('/login/unauthorized')
     end
@@ -125,7 +134,8 @@ class UserManager
     connectToDatabase
     queryString =
       %(
-        SELECT email FROM User
+        SELECT email
+          FROM User
           WHERE email = '#{username}';
       )
     resultArray = make_query(queryString)
