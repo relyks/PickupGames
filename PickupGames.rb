@@ -9,16 +9,16 @@ class AuthenticationMiddleware < Sinatra::Base
   end
 
   post('/register/?') do
-    $password = params['password']
-    $email = params['email']
-    'You have registered!'
+    UserManager.createNewUser(params['email'],
+                              params['password'],
+                              params['school'])
+    redirect('/main')
   end
 
   post('/login/?') do
-    if params['password'] == $password and
-       params['email'] == $email
-      session[:admin] = params['email']
-      redirect('/main')
+    if UserManager.userShouldBeAccepted?(params['email'], params['password'])
+      session[:user] = params['email']
+      redirect('/all_users')
     else
       redirect('/login')
     end
@@ -28,14 +28,8 @@ class AuthenticationMiddleware < Sinatra::Base
     haml(:login)
   end
 
-  not_found do
-    redirect('/main')
-  end
-end
-
-class FormController < Sinatra::Base
-  get('/form') do
-    'Yessssss'
+  get('/main/?') do
+    haml(:main)
   end
 end
 
@@ -43,7 +37,7 @@ class PickupGamesApplicationController < Sinatra::Base
   use AuthenticationMiddleware
 
   before do
-    if session[:admin].nil? and request.path != '/'
+    if session[:user].nil? and request.path != '/'
       redirect('/login')
     end
   end
@@ -52,32 +46,41 @@ class PickupGamesApplicationController < Sinatra::Base
     redirect('/main')
   end
 
-  get('/main/?') do
-    haml(:main)
-  end
-
-  get('/some_love/?') do
-    'You made it!'
+  get('/all_users/?') do
+    @users = UserManager.getAllUsers
+    puts @users
+    haml(:all_users)
   end
 end
 
 class PickupGamesApplication < Sinatra::Base
   use PickupGamesApplicationController
-  ######
-  use FormController
-  get('/app') do
-    'Am I logged in?'
-  end
 end
 
+User = Struct.new(:username, :password, :school)
+
 class UserManager
+  @@users = {}
+
+  def self.connectToDatabase
+    nil
+  end
 
   def self.createNewUser(username, password, school)
-    
+    @@users[username] = User.new(username, password, school)
   end
 
   def self.userShouldBeAccepted?(username, password)
+    @@users.has_key?(username) and
+      @@users[username].password == password
+  end
 
+  def self.getAllUsers
+    users = []
+    for (email, user) in @@users
+      users.push({email: email, password: user.password})
+    end
+    users
   end
 end
 

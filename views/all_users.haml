@@ -1,0 +1,10 @@
+%html
+  %head
+    %title Users - Pickup Games
+  %body
+    #content
+      %table
+        - for user in @users
+          %tr
+            %td= user[:email]
+            %td= user[:password]
