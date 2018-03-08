@@ -1,8 +1,13 @@
 require 'sinatra/base'
+require 'mysql2'
 
 class AuthenticationMiddleware < Sinatra::Base
   enable(:sessions)
   set(:bind, '0.0.0.0')
+
+  before do
+    cache_control(:no_cache)
+  end
 
   get('/register/?') do
     haml(:register)
@@ -12,9 +17,11 @@ class AuthenticationMiddleware < Sinatra::Base
     if UserManager.userIsAlreadyRegistered?(username: params['email'])
       redirect('/register/error')
     else
-      UserManager.createNewUser(username: params['email'],
-                                password: params['password'],
-                                school:   params['school'])
+      UserManager.createNewUser(username:  params['email'],
+                                password:  params['password'],
+                                school:    params['school'],
+                                firstName: params['firstName'],
+                                lastName:  params['lastName'])
       redirect('/login')
     end
   end
@@ -54,6 +61,9 @@ class AuthenticationMiddleware < Sinatra::Base
   end
 
   get('/main/?') do
+    if not session[:user].nil?
+      @firstName = UserManager.getFirstnameOfUser(username: session[:user])
+    end
     haml(:main)
   end
 end
@@ -82,30 +92,81 @@ class PickupGamesApplication < Sinatra::Base
   # put other controllers here
 end
 
-User = Struct.new(:username, :password, :school)
+User = Struct.new(:username, :password, :school, :firstName, :lastName)
 
 class UserManager
-  @@users = {}
+  # need to do some startup tasks when the app is first launched
+  # check if the tables in the database have been created
+
+  def self.make_query(queryString)
+    return @@client.query(queryString).to_a
+  end
 
   def self.connectToDatabase
-    nil
+    @@client = Mysql2::Client.new(host:     'localhost',
+                                  database: 'test',
+                                  username: 'root',
+                                  password: File.read('password.txt').chomp)
+  end
+
+  def self.getFirstnameOfUser(username:)
+    connectToDatabase
+    queryString =
+      %(
+        SELECT firstName
+          FROM User
+          WHERE email = '#{username}';
+      )
+    resultArray = make_query(queryString)
+    return resultArray[0]['firstName']
   end
 
   def self.userIsAlreadyRegistered?(username:)
-    @@users.keys.include?(username)
+    connectToDatabase
+    queryString =
+      %(
+        SELECT email FROM User
+          WHERE email = '#{username}';
+      )
+    resultArray = make_query(queryString)
+    return (not resultArray.empty?)
   end
 
-  def self.createNewUser(username:, password:, school:)
-    @@users[username] = User.new(username, password, school)
+  def self.createNewUser(username:, password:, school:, firstName:, lastName:)
+    connectToDatabase
+    queryString =
+      %(
+        INSERT INTO User(email, password, firstName, lastName)
+          VALUES ('#{username}', '#{password}', '#{firstName}', '#{lastName}');
+      )
+    make_query(queryString)
   end
 
   def self.userShouldBeAccepted?(username:, password:)
-    @@users.has_key?(username) and
-      @@users[username].password == password
+    connectToDatabase
+    queryString =
+      %(
+        SELECT email, password
+          FROM User
+          WHERE email = '#{username}' AND password = '#{password}';
+      )
+    resultArray = make_query(queryString)
+    return (not resultArray.empty?)
   end
 
   def self.getAllUsers
-    @@users.map { |email, user| { email: email, password: user.password } }
+    connectToDatabase
+    queryString =
+      %(
+        SELECT email, password
+          FROM User;
+      )
+    resultArray = make_query(queryString)
+    users = []
+    for row in resultArray do
+      users.push({ email: row['email'], password: row['password'] })
+    end
+    return users
   end
 end
 
