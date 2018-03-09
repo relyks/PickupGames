@@ -65,7 +65,7 @@ class AuthenticationMiddleware < Sinatra::Base
   end
 
   get('/main/?') do
-    if not session[:user].nil?
+    if session[:user] != nil
       @firstName = UserManager.getFirstnameOfUser(username: session[:user])
     end
     haml(:main)
@@ -81,7 +81,7 @@ class PickupGamesApplicationController < Sinatra::Base
                   :no_store,
                   :must_revalidate,
                   max_age: 0)
-    if session[:user].nil? and request.path != '/'
+    if session[:user] == nil and request.path != '/'
       redirect('/login/unauthorized')
     end
   end

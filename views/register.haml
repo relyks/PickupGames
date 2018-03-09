@@ -3,7 +3,7 @@
     %title Register - Pickup Games
   %body
     #content
-      - unless @error.nil?
+      - if @error != nil
         #error
           %strong
             - if @error == :ERROR

@@ -3,7 +3,7 @@
     %title Main - Pickup Games
   %body
     #content
-      - unless @firstName.nil?
+      - if @firstName != nil
         %strong= "Welcome #{@firstName.capitalize}!"
         %br
       %table
