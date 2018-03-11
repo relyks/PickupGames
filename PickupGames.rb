@@ -2,8 +2,6 @@ require 'sinatra/base'
 require 'mysql2'
 
 class AuthenticationMiddleware < Sinatra::Base
-  enable(:sessions)
-  set(:bind, '0.0.0.0')
 
   before do
     cache_control(:private,
@@ -97,6 +95,10 @@ class PickupGamesApplicationController < Sinatra::Base
 end
 
 class PickupGamesApplication < Sinatra::Base
+  enable(:sessions)
+  set(:bind, '0.0.0.0')
+  set(:port, 80)
+  
   use PickupGamesApplicationController
   # put other controllers here
 end
