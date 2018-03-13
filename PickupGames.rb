@@ -98,7 +98,7 @@ class PickupGamesApplication < Sinatra::Base
   enable(:sessions)
   set(:bind, '0.0.0.0')
   set(:port, 80)
-  
+
   use PickupGamesApplicationController
   # put other controllers here
 end
@@ -109,7 +109,7 @@ class UserManager
   # need to do some startup tasks when the app is first launched
   # check if the tables in the database have been created
 
-  def self.make_query(queryString)
+  def self.makeQuery(queryString)
     return @@client.query(queryString).to_a
   end
 
@@ -128,7 +128,7 @@ class UserManager
           FROM User
           WHERE email = '#{username}';
       )
-    resultArray = make_query(queryString)
+    resultArray = makeQuery(queryString)
     return resultArray[0]['firstName']
   end
 
@@ -140,7 +140,7 @@ class UserManager
           FROM User
           WHERE email = '#{username}';
       )
-    resultArray = make_query(queryString)
+    resultArray = makeQuery(queryString)
     return (not resultArray.empty?)
   end
 
@@ -151,7 +151,7 @@ class UserManager
         INSERT INTO User(email, password, firstName, lastName)
           VALUES ('#{username}', '#{password}', '#{firstName}', '#{lastName}');
       )
-    make_query(queryString)
+    makeQuery(queryString)
   end
 
   def self.userShouldBeAccepted?(username:, password:)
@@ -162,7 +162,7 @@ class UserManager
           FROM User
           WHERE email = '#{username}' AND password = '#{password}';
       )
-    resultArray = make_query(queryString)
+    resultArray = makeQuery(queryString)
     return (not resultArray.empty?)
   end
 
@@ -173,7 +173,7 @@ class UserManager
         SELECT email, password
           FROM User;
       )
-    resultArray = make_query(queryString)
+    resultArray = makeQuery(queryString)
     users = []
     for row in resultArray do
       users.push({ email: row['email'], password: row['password'] })
