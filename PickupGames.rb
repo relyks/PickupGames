@@ -92,7 +92,7 @@ class PickupGamesApplicationController < Sinatra::Base
 
   get('/all_users/?') do
     @users = UserManager.getAllUsers
-    haml(:all_users)
+    haml(:users)
   end
 end
 
