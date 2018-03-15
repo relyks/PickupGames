@@ -79,7 +79,9 @@ class PickupGamesApplicationController < Sinatra::Base
                   :no_store,
                   :must_revalidate,
                   max_age: 0)
-    if session[:user] == nil and request.path != '/'
+    if session[:user] == nil and
+       request.path != '/'   and
+       (not request.path.start_with?('/static/'))
       redirect('/login/unauthorized')
     end
   end
@@ -96,7 +98,6 @@ end
 
 class PickupGamesApplication < Sinatra::Base
   enable(:sessions)
-  set(:bind, '0.0.0.0')
   set(:port, 80)
 
   use PickupGamesApplicationController
