@@ -7,6 +7,10 @@ class PickupGamesApplication < Sinatra::Base
 
   use PickupGamesApplicationController
   # put other controllers here
+
+  not_found do
+    redirect('/main/not_found')
+  end
 end
 
 PickupGamesApplication.run!

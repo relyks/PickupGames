@@ -67,4 +67,10 @@ class AuthenticationMiddleware < Sinatra::Base
     end
     haml(:main)
   end
+
+  get('/main/not_found') do
+    status 404
+    @error = :NOT_FOUND
+    haml(:main)
+  end
 end

@@ -4,7 +4,10 @@
     =haml(:header)
   %body
     #content
-      - if @firstName != nil
+      - if @error != nil
+        %strong Resource not found
+        %br
+      - elsif @firstName != nil
         %strong= "Welcome #{@firstName.capitalize}!"
         %br
       %table
