@@ -62,7 +62,8 @@ class UserManager
     resultArray = Database.makeQuery(queryString)
     users = []
     for row in resultArray do
-      users.push({ email: row['email'], password: row['password'] })
+      users.push({ email:    row['email'],
+                   password: row['password'] })
     end
     return users
   end

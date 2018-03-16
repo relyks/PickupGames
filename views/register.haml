@@ -16,13 +16,13 @@
           %td
             %form{name: 'register', method: 'post', action: '/register'}
               %label{for: 'email'} E-mail
-              %input{type: 'text', name: 'email'}
+              %input{type: 'email', name: 'email', required: true}
               %label{for: 'firstName'} First Name
-              %input{type: 'text', name: 'firstName'}
+              %input{type: 'text', name: 'firstName', required: true}
               %label{for: 'lastName'} Last Name
-              %input{type: 'text', name: 'lastName'}
+              %input{type: 'text', name: 'lastName', required: true}
               %label{for: 'password'} Password
-              %input{type: 'password', name: 'password'}
+              %input{type: 'password', name: 'password', required: true}
               %label{for: 'school'} School
-              %input{type: 'text', name: 'school'}
+              %input{type: 'text', name: 'school', required: true}
               %input{type: 'submit', value: 'Register'}
