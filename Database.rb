@@ -1,8 +1,12 @@
 require 'mysql2'
 
 class Database
+
   def self.makeQuery(queryString)
+    connect
     return @@client.query(queryString).to_a
+  ensure
+    @@client.close
   end
 
   def self.connect

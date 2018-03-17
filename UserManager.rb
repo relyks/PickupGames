@@ -7,7 +7,6 @@ class UserManager
   # check if the tables in the database have been created
 
   def self.getFirstnameOfUser(username:)
-    Database.connect
     queryString =
       %(
         SELECT firstName
@@ -19,7 +18,6 @@ class UserManager
   end
 
   def self.userIsAlreadyRegistered?(username:)
-    Database.connect
     queryString =
       %(
         SELECT email
@@ -31,7 +29,6 @@ class UserManager
   end
 
   def self.createNewUser(username:, password:, school:, firstName:, lastName:)
-    Database.connect
     queryString =
       %(
         INSERT INTO User(email, password, firstName, lastName)
@@ -41,7 +38,6 @@ class UserManager
   end
 
   def self.userShouldBeAccepted?(username:, password:)
-    Database.connect
     queryString =
       %(
         SELECT email, password
@@ -53,7 +49,6 @@ class UserManager
   end
 
   def self.getAllUsers
-    Database.connect
     queryString =
       %(
         SELECT email, password
