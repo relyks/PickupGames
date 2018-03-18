@@ -7,7 +7,7 @@
       - if @error != nil
         %strong Resource not found
         %br
-      - elsif @firstName != nil
+      - if @firstName != nil
         %strong= "Welcome #{@firstName.capitalize}!"
         %br
       %table
