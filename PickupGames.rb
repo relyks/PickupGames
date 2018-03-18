@@ -5,6 +5,8 @@ class PickupGamesApplication < Sinatra::Base
   enable(:sessions)
   set(:port, 80)
 
+  use Rack::MethodOverride
+
   use PickupGamesApplicationController
   # put other controllers here
 
