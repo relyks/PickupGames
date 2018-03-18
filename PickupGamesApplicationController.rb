@@ -2,7 +2,7 @@ require_relative 'AuthenticationMiddleware.rb'
 require_relative 'UserManager.rb'
 
 class PickupGamesApplicationController < Sinatra::Base
-  use AuthenticationMiddleware
+  use(AuthenticationMiddleware)
 
   before do
     cache_control(:private,
