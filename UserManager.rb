@@ -1,21 +1,8 @@
 require_relative 'Database.rb'
 
-User = Struct.new(:username, :password, :school, :firstName, :lastName)
-
 class UserManager
   # need to do some startup tasks when the app is first launched
   # check if the tables in the database have been created
-
-  def self.getFirstnameOfUser(username:)
-    queryString =
-      %(
-        SELECT firstName
-          FROM User
-          WHERE email = '#{username}';
-      )
-    resultArray = Database.makeQuery(queryString)
-    return resultArray[0]['firstName']
-  end
 
   def self.userIsAlreadyRegistered?(username:)
     queryString =

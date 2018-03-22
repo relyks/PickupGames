@@ -1,4 +1,6 @@
 require 'sinatra/base'
+require_relative 'UserManager.rb'
+require_relative 'User.rb'
 
 class AuthenticationMiddleware < Sinatra::Base
 
@@ -63,7 +65,8 @@ class AuthenticationMiddleware < Sinatra::Base
 
   get('/main/?') do
     if session[:user] != nil
-      @firstName = UserManager.getFirstnameOfUser(username: session[:user])
+      user = User.new(username: session[:user])
+      @firstName = user.firstName
     end
     haml(:main)
   end

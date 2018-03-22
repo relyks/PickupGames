@@ -10,6 +10,7 @@ class PickupGamesApplicationController < Sinatra::Base
                   :no_store,
                   :must_revalidate,
                   max_age: 0)
+
     if session[:user] == nil and
        request.path != '/'   and
        (not request.path.start_with?('/static/'))
@@ -22,7 +23,7 @@ class PickupGamesApplicationController < Sinatra::Base
   end
 
   get('/all_users/?') do
-    @users = UserManager.getAllUsers
+    @users = UserManager.getAllUsers()
     haml(:users)
   end
 end
