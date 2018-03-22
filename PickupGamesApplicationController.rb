@@ -2,14 +2,14 @@ require_relative 'AuthenticationMiddleware.rb'
 require_relative 'UserManager.rb'
 
 class PickupGamesApplicationController < Sinatra::Base
-  use(AuthenticationMiddleware)
+  use AuthenticationMiddleware
 
   before do
-    cache_control(:private,
+    cache_control :private,
                   :no_cache,
                   :no_store,
                   :must_revalidate,
-                  max_age: 0)
+                  max_age: 0
 
     if session[:user] == nil and
        request.path != '/'   and

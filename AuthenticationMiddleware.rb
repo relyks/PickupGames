@@ -5,11 +5,11 @@ require_relative 'User.rb'
 class AuthenticationMiddleware < Sinatra::Base
 
   before do
-    cache_control(:private,
+    cache_control :private,
                   :no_cache,
                   :no_store,
                   :must_revalidate,
-                  max_age: 0)
+                  max_age: 0
   end
 
   get('/register/?') do
