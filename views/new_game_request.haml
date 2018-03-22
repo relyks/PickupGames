@@ -1,0 +1,20 @@
+%html
+  %head
+    %title New Game Request - Pickup Games
+    =haml(:header)
+  %body
+    #content
+      %h1 What sport would you like to play?
+      %table
+        %tr
+          %td
+            %form{name: 'create_new_game', method: 'post', action: '/new_game_request'}
+              - oneHourFromNow = Time.now + 3600
+              - twoHoursFromNow = oneHourFromNow + 3600
+              - lowTime = oneHourFromNow.strftime("%Y-%m-%dT%H:%M")
+              - highTime = twoHoursFromNow.strftime("%Y-%m-%dT%H:%M")
+              %label{for: 'gameStartTime'} Start Time
+              %input{id: 'gameStartTime', type: 'datetime-local', name: 'gameStartTime', min: "#{lowTime}", value: "#{lowTime}"}
+              %label{for: 'gameEndTime'} End Time
+              %input{id: 'gameEndTime', type: 'datetime-local', name: 'gameEndTime', min: "#{highTime}", value: "#{highTime}"}
+              %input{type: 'submit', value: 'Submit request'}
