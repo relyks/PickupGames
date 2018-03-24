@@ -18,6 +18,7 @@ class PickupGamesApplicationController < Sinatra::Base
        request.path != '/'   and
        (not request.path.start_with?('/static/'))
       cookies[:login_unauthorized] = true
+      cookies[:requested_path] = request.path
       redirect('/login')
     end
   end

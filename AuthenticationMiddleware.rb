@@ -42,8 +42,12 @@ class AuthenticationMiddleware < Sinatra::Base
                                          password: params['password'])
       session[:user] = params['email']
       cookies.delete(:login_invalid)
-      # this needs to redirect to the page that user requested
-      redirect('/all_users')
+      path = '/all_users'
+      if cookies.has_key?(:requested_path)
+        path = cookies[:requested_path]
+        cookies.delete(:requested_path)
+      end
+      redirect(path)
     else
       cookies[:login_invalid] = true
       redirect('/login')

@@ -9,6 +9,10 @@ class PickupGamesApplication < Sinatra::Base
   use Rack::MethodOverride
 
   use PickupGamesApplicationController
+
+  get('/test') do
+    'Redirect is working'
+  end
   #use ActionsController
   #use NewSportsRequestController
 
