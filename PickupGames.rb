@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require_relative 'PickupGamesApplicationController.rb'
+require_relative 'ActionsController.rb'
 
 class PickupGamesApplication < Sinatra::Base
   enable :sessions
@@ -8,7 +9,8 @@ class PickupGamesApplication < Sinatra::Base
   use Rack::MethodOverride
 
   use PickupGamesApplicationController
-  # put other controllers here
+  #use ActionsController
+  #use NewSportsRequestController
 
   not_found do
     redirect('/main/not_found')

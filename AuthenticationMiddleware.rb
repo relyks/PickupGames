@@ -1,8 +1,10 @@
 require 'sinatra/base'
+require 'sinatra/cookies'
 require_relative 'UserManager.rb'
 require_relative 'User.rb'
 
 class AuthenticationMiddleware < Sinatra::Base
+  helpers Sinatra::Cookies
 
   before do
     cache_control :private,
@@ -13,13 +15,19 @@ class AuthenticationMiddleware < Sinatra::Base
   end
 
   get('/register/?') do
+    if cookies.has_key?(:registration_error)
+      @error = :ERROR
+      cookies.delete(:registration_error)
+    end
     haml(:register)
   end
 
   post('/register/?') do
     if UserManager.userIsAlreadyRegistered?(username: params['email'])
-      redirect('/register/error')
+      cookies[:registration_error] = true
+      redirect('/register')
     else
+      cookies.delete(:registration_error)
       UserManager.createNewUser(username:  params['email'],
                                 password:  params['password'],
                                 school:    params['school'],
@@ -29,32 +37,27 @@ class AuthenticationMiddleware < Sinatra::Base
     end
   end
 
-  get('/register/error/?') do
-    @error = :ERROR
-    haml(:register)
-  end
-
   post('/login/?') do
     if UserManager.userShouldBeAccepted?(username: params['email'],
                                          password: params['password'])
       session[:user] = params['email']
+      cookies.delete(:login_invalid)
+      # this needs to redirect to the page that user requested
       redirect('/all_users')
     else
-      redirect('/login/invalid')
+      cookies[:login_invalid] = true
+      redirect('/login')
     end
   end
 
   get('/login/?') do
-    haml(:login)
-  end
-
-  get('/login/invalid/?') do
-    @error = :INVALID
-    haml(:login)
-  end
-
-  get('/login/unauthorized/?') do
-    @error = :UNAUTHORIZED
+    if cookies.has_key?(:login_invalid)
+      @error = :INVALID
+      cookies.delete(:login_invalid)
+    elsif cookies.has_key?(:login_unauthorized)
+      @error = :UNAUTHORIZED
+      cookies.delete(:login_unauthorized)
+    end
     haml(:login)
   end
 
