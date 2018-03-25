@@ -6,6 +6,14 @@ class PickupGamesApplication < Sinatra::Base
   enable :sessions
   set :port, 80
 
+  configure do
+    enable :logging
+  end
+
+  # get('/favicon.ico') do
+  #   redirect('/static/favicon.ico')
+  # end
+
   use Rack::MethodOverride
 
   use PickupGamesApplicationController
