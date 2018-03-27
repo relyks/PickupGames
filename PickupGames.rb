@@ -5,10 +5,7 @@ require_relative 'ActionsController.rb'
 class PickupGamesApplication < Sinatra::Base
   enable :sessions
   set :port, 80
-
-  configure do
-    enable :logging
-  end
+  enable :logging
 
   # get('/favicon.ico') do
   #   redirect('/static/favicon.ico')

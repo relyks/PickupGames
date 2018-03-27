@@ -1,10 +1,8 @@
 require 'sinatra/base'
-require 'sinatra/cookies'
 require_relative 'AuthenticationMiddleware.rb'
 require_relative 'UserManager.rb'
 
 class PickupGamesApplicationController < Sinatra::Base
-  helpers Sinatra::Cookies
   use AuthenticationMiddleware
 
   before do
@@ -14,11 +12,11 @@ class PickupGamesApplicationController < Sinatra::Base
                   :must_revalidate,
                   max_age: 0
 
-    if session[:user] == nil and
-       request.path != '/'   and
+    if (not session.has_key?(:user)) and
+       (request.path != '/')         and
        (not request.path.start_with?('/static/'))
-      cookies[:login_unauthorized] = true
-      cookies[:requested_path] = request.path
+      session[:login_unauthorized] = true
+      session[:requested_path] = request.path
       redirect('/login')
     end
   end
