@@ -15,11 +15,11 @@ class PickupGamesApplication < Sinatra::Base
 
   use PickupGamesApplicationController
 
-  get('/test') do
-    'Redirect is working'
-  end
-  #use ActionsController
-  #use NewSportsRequestController
+  # get('/test') do
+  #   'Redirect is working'
+  # end
+  use ActionsController
+  use NewSportsRequestController
 
   not_found do
     redirect('/main/not_found')
