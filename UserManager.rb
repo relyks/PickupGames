@@ -15,11 +15,11 @@ class UserManager
     return (not resultArray.empty?)
   end
 
-  def self.createNewUser(username:, password:, school:, firstName:, lastName:)
+  def self.createNewUser(username:, password:, firstName:, lastName:, realUser: false)
     queryString =
       %(
-        INSERT INTO User(email, password, firstName, lastName)
-          VALUES ('#{username}', '#{password}', '#{firstName}', '#{lastName}');
+        INSERT INTO User(email, password, firstName, lastName, realUser)
+          VALUES ('#{username}', '#{password}', '#{firstName}', '#{lastName}', #{realUser.to_s});
       )
     Database.makeQuery(queryString)
   end

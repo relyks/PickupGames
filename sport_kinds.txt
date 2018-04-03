@@ -1,0 +1,12 @@
+| Sport             | Number of players |
+| ----------------- | ----------------- |
+| singles tennis    | 2                 |
+| doubles tennis    | 4                 |
+| basketball        | 10                |
+| 3-on-3 basketball | 6                 |
+| field hockey      | 20                |
+| flag football     | 12                |
+| indoor soccer     | 10                |
+| outdoor soccer    | 20                |
+| softball          | 18                |
+

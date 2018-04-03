@@ -11,7 +11,7 @@ class Database
 
   def self.connect
     @@client = Mysql2::Client.new(host:     'localhost',
-                                  database: 'test',
+                                  database: 'pickupgames',
                                   username: 'root',
                                   password: File.read('password.txt').chomp)
   end
