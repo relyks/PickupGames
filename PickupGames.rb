@@ -1,15 +1,13 @@
 require 'sinatra/base'
 require_relative 'PickupGamesApplicationController.rb'
 require_relative 'ActionsController.rb'
+require_relative 'NewSportsGameRequestController.rb'
+require_relative 'MyGameRequestsController.rb'
 
 class PickupGamesApplication < Sinatra::Base
   enable :sessions
   set :port, 80
   enable :logging
-
-  # get('/favicon.ico') do
-  #   redirect('/static/favicon.ico')
-  # end
 
   use Rack::MethodOverride
 
@@ -19,7 +17,8 @@ class PickupGamesApplication < Sinatra::Base
   #   'Redirect is working'
   # end
   use ActionsController
-  use NewSportsRequestController
+  use NewSportsGameRequestController
+  use MyGameRequestsController
 
   not_found do
     redirect('/main/not_found')

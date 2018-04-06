@@ -39,7 +39,7 @@ create table canHost(
     primary key(locationID, sportID)
 );
 
-create Table Plays(
+create Table plays(
         gameID varchar(50) references Game on delete cascade,
         email varchar(50) references User on delete cascade,
         Primary key (gameID,email)

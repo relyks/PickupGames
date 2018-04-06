@@ -9,7 +9,7 @@ class SportsGameManager
       %(
         INSERT INTO Sport(sportID, sportType, numberOfPlayers)
           VALUES ('#{sportID}', '#{sportType}', #{numberOfPlayers});
-      )
+       )
     Database.makeQuery(queryString)
   end
 
@@ -19,7 +19,7 @@ class SportsGameManager
         INSERT INTO Game(gameID, skillLevel, startTime, finalGame, sportID, locationID)
           VALUES ('#{gameID}', '#{skillLevel}', '#{startTime.strftime('%Y-%m-%d %H:00:00')}',
                  #{finalGame.to_s}, '#{sportID}', '#{locationID}');
-      )
+       )
     Database.makeQuery(queryString)
   end
 
@@ -28,7 +28,7 @@ class SportsGameManager
       %(
         INSERT INTO Location(locationID, locationName)
           VALUES ('#{locationID}', '#{locationName}');
-      )
+       )
     Database.makeQuery(queryString)
   end
 
@@ -37,7 +37,7 @@ class SportsGameManager
       %(
         INSERT INTO plays(gameID, email)
           VALUES ('#{gameID}', '#{email}');
-      )
+       )
     Database.makeQuery(queryString)
   end
 
@@ -46,8 +46,14 @@ class SportsGameManager
       %(
         INSERT INTO canHost(locationID, sportID)
           VALUES ('#{locationID}', '#{sportID}');
-      )
+       )
     Database.makeQuery(queryString)
+  end
+
+  def self.getPossibleSports
+    queryString = 'SELECT DISTINCT sportType FROM Sport;'
+    resultArray = Database.makeQuery(queryString)
+    return resultArray.map { |row| row['sportType'] }
   end
 
   def self.createNewRequest(username:, sportKind:, skillLevel:, startTime:, locationID:)

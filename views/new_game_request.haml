@@ -4,17 +4,44 @@
     =haml(:header)
   %body
     #content
+      - shouldDisplayParameters = (@parameters != nil) and (not @parameters.empty?)
+      - if @errorMessage != nil
+        #error
+          %strong= @errorMessage
+      %br
       %h1 What sport would you like to play?
       %table
         %tr
           %td
             %form{name: 'create_new_game', method: 'post', action: '/new_game_request'}
-              - oneHourFromNow = Time.now + 3600
-              - twoHoursFromNow = oneHourFromNow + 3600
-              - lowTime = oneHourFromNow.strftime("%Y-%m-%dT%H:%M")
-              - highTime = twoHoursFromNow.strftime("%Y-%m-%dT%H:%M")
-              %label{for: 'gameStartTime'} Start Time
-              %input{id: 'gameStartTime', type: 'datetime-local', name: 'gameStartTime', min: "#{lowTime}", value: "#{lowTime}"}
-              %label{for: 'gameEndTime'} End Time
-              %input{id: 'gameEndTime', type: 'datetime-local', name: 'gameEndTime', min: "#{highTime}", value: "#{highTime}"}
+              %label{for: 'skillLevel'} Skill Level
+              %select{id: 'skillLevel', required: true}
+                - for skillLevel in %w[beginner intermediate advanced] do
+                  - if shouldDisplayParameters and (skillLevel == @parameters[:skillLevel])
+                    %option{value: skillLevel, selected: true}= skillLevel
+                  - else
+                    %option{value: skillLevel}= skillLevel
+
+              %label{for: 'sportType'} Sport Type
+              %select{name: 'sportType', id: 'sportType', required: true}
+                - for sportType in @possibleSports do
+                  - if shouldDisplayParameters and (sportType == @parameters[:sportType])
+                    %option{value: sportType.split.join('-').downcase, selected: true}= sportType
+                  - else
+                    %option{value: sportType.split.join('-').downcase}= sportType
+
+              %label{for: 'location'} Location
+              %select{name: 'location', id: 'location', required: true}
+                - for location in @availableLocations do
+                  - if shouldDisplayParameters and (location == @parameters[:location])
+                    %option{value: location.delete('#').split.join('-').downcase, selected: true}= location
+                  - else
+                    %option{value: location.delete('#').split.join('-').downcase}= location
+
+              - if shouldDisplayParameters
+                - startTime = @parameters[:startTime]
+              - else
+                - startTime = (Time.now + 3600).strftime("%Y-%m-%dT%H:%M")
+              %label{for: 'startTime'} Start Time
+              %input{name: 'startTime', id: 'startTime', required: true, type: 'datetime-local', min: "#{startTime}", value: "#{startTime}"}
               %input{type: 'submit', value: 'Submit request'}
