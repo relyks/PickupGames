@@ -1,21 +1,8 @@
 require 'sinatra/base'
+require_relative 'Game'
+require_relative 'SportsGameManager'
 
 class NewSportsGameRequestController < Sinatra::Base
-
-  helpers do
-    def processRequestResult(isSuccessfulRequest, gameID, errorMessage, parameters)
-      if isSuccessfulRequest
-        session[:recently_made_request] = gameID
-        session.delete(:invalid_game_creation_request)
-        session.delete(:form_parameters)
-        redirect('/my_sports_game_requests')
-      else
-        session[:invalid_game_creation_request] = errorMessage
-        session[:form_parameters] = parameters.dup
-        redirect('/new_sports_game_request')
-      end
-    end
-  end
 
   get('/new_sports_game_request/?') do
     if session.has_key?(:invalid_game_creation_request)
@@ -27,48 +14,53 @@ class NewSportsGameRequestController < Sinatra::Base
       session.delete(:form_parameters)
     end
     @possibleSports     = SportsGameManager.getPossibleSports()
-    @availableLocations = Locations.getPossibleLocations()
+    @availableLocations = SportsGameManager.getPossibleLocations()
     haml(:new_game_request)
   end
 
   post('/new_sports_game_request/?') do
+    # convert time to right format
+    params['startTime'] = Time.strptime(params['startTime'], "%Y-%m-%dT%H:%M")
     (gameID, (isSuccessfulRequest, errorMessage)) =
       SportsGameManager.createNewRequest(username:   session[:user],
-                                         sportKind:  params['sportKind'],
+                                         sportID:    params['sportID'],
                                          skillLevel: params['skillLevel'],
                                          startTime:  params['startTime'],
                                          locationID: params['location'])
     session[:action_completed] = :CREATION
-    processRequestResult(isSuccessfulRequest, gameID, errorMessage, params)
+    if isSuccessfulRequest
+      session[:recently_made_request] = gameID
+      session.delete(:invalid_game_creation_request)
+      session.delete(:form_parameters)
+      redirect('/my_sports_game_requests')
+    else
+      session[:invalid_game_creation_request] = errorMessage
+      session[:form_parameters] = params.dup
+      redirect('/new_sports_game_request')
+    end
   end
 
   delete('/delete_sports_game_request/game/:gameID') do
     SportsGameManager.removeGameRequest(username: session[:user],
-                                        gameID: params[:gameID])
+                                        gameID:   params[:gameID])
     session[:action_completed] = :DELETION
-
-    redirect('my_sports_game_requests')
+    redirect('/my_sports_game_requests')
   end
 
-  get('/edit_game_request/game/:gameID') do
+  # need to remove from the game table when there are no people left
+  # instead of just removing the relation in i
 
-    # get info for game
-    # load it into the form
-    # submitting the form
-  end
-
-  post('/edit_game_request/game/:gameID') do
-    SportsGameManager.removeGameRequest(username: session[:user],
-                                        gameID: params[:gameID])
-    # need to remove from the game table when there are no people left
-    # instead of just removing the relation in i
-    (gameID, (isSuccessfulRequest, errorMessage)) =
-        SportsGameManager.createNewRequest(username:   session[:user],
-                                           sportKind:  params['sportKind'],
-                                           skillLevel: params['skillLevel'],
-                                           startTime:  params['startTime'],
-                                           locationID: params['location'])
+  put('/edit_game_request/game/:gameID') do
+    gameInfo = Game.findBy(gameID: params[:gameID])
+    SportsGameManager.removeExistingRequest(username: session[:user],
+                                            gameID:   params[:gameID])
     session[:action_completed] = :EDIT
-    processRequestResult(isSuccessfulRequest, gameID, errorMessage, params)
+    # TODO: change to use actual sport kind and location here
+
+    session[:form_parameters] = { sportID:  gameInfo.sportID,
+                                  skillLevel: gameInfo.skillLevel,
+                                  startTime:  gameInfo.startTime,
+                                  locationID: gameInfo.locationID }
+    redirect('/new_sports_game_request')
   end
 end

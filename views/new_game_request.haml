@@ -13,17 +13,17 @@
       %table
         %tr
           %td
-            %form{name: 'create_new_game', method: 'post', action: '/new_game_request'}
+            %form{name: 'create_new_game', method: 'post', action: '/new_sports_game_request'}
               %label{for: 'skillLevel'} Skill Level
-              %select{id: 'skillLevel', required: true}
+              %select{name: 'skillLevel', id: 'skillLevel', required: true}
                 - for skillLevel in %w[beginner intermediate advanced] do
                   - if shouldDisplayParameters and (skillLevel == @parameters[:skillLevel])
-                    %option{value: skillLevel, selected: true}= skillLevel
+                    %option{value: skillLevel, selected: true}= skillLevel.capitalize
                   - else
-                    %option{value: skillLevel}= skillLevel
+                    %option{value: skillLevel}= skillLevel.capitalize
 
-              %label{for: 'sportType'} Sport Type
-              %select{name: 'sportType', id: 'sportType', required: true}
+              %label{for: 'sportID'} Sport Type
+              %select{name: 'sportID', id: 'sportID', required: true}
                 - for sportType in @possibleSports do
                   - if shouldDisplayParameters and (sportType == @parameters[:sportType])
                     %option{value: sportType.split.join('-').downcase, selected: true}= sportType
@@ -39,7 +39,7 @@
                     %option{value: location.delete('#').split.join('-').downcase}= location
 
               - if shouldDisplayParameters
-                - startTime = @parameters[:startTime]
+                - startTime = @parameters[:startTime].strftime("%Y-%m-%dT%H:%M")
               - else
                 - startTime = (Time.now + 3600).strftime("%Y-%m-%dT%H:%M")
               %label{for: 'startTime'} Start Time

@@ -1,0 +1,52 @@
+%html
+  %head
+    %title My Game Requests - Pickup Games
+    =haml(:header)
+  %body
+    #content
+      - if @message != nil
+        #message
+          %strong= @message.to_s
+      - if @action != nil
+        #action
+          %h1
+            - case @action
+            - when :DELETION
+              = 'Game request has been deleted'
+            - when :CREATION
+              = 'Game request has been created'
+            - when :EDIT
+              = 'Game request has been edited'
+      - requestKinds = ['Final Games', 'Satisfied Game Requests', 'Potential Games', 'Unsatisfied Game Requests']
+      - gamesRequestList = [@finalGameRequests, @satisfiedGameRequests, @potentialGameRequests, @unsatisfiedGameRequests]
+      - for (gameRequests, requestKind) in gamesRequestList.zip(requestKinds) do
+        - next if gameRequests.empty?
+        %h1= requestKind
+        %table
+          %tr
+            %th Sport
+            %th Level
+            %th Location
+            %th Time
+            %th Edit
+            %th Delete
+        - for game in gameRequests do
+          %tr
+            %td= game[:sport]
+            %td= game[:level]
+            %td= game[:location]
+            %td= game[:time].strftime('%A, %b %d - %l:00 %p')
+            - if gameRequests == @finalGameRequests
+              %td _
+              %td _
+            - else
+              %td
+                %form{name: 'delete_game_request', method: 'post', action: "/delete_game_request/game/#{game[:gameID]}"}
+                  %input{type: 'hidden', name: '_method', value: 'DELETE'}
+                  %input{type: 'submit', value: 'Delete'}
+              %td
+                %form{name: 'edit_game_request', method: 'post', action: "/edit_game_request/game/#{game[:gameID]}"}
+                  %input{type: 'hidden', name: '_method', value: 'PUT'}
+                  %input{type: 'submit', value: 'Edit'}
+          %br
+          %br

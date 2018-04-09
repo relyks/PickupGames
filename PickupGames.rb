@@ -1,8 +1,8 @@
 require 'sinatra/base'
-require_relative 'PickupGamesApplicationController.rb'
-require_relative 'ActionsController.rb'
-require_relative 'NewSportsGameRequestController.rb'
-require_relative 'MyGameRequestsController.rb'
+require_relative 'PickupGamesApplicationController'
+require_relative 'ActionsController'
+require_relative 'NewSportsGameRequestController'
+require_relative 'MyGameRequestsController'
 
 class PickupGamesApplication < Sinatra::Base
   enable :sessions

@@ -1,6 +1,6 @@
 require 'sinatra/base'
-require_relative 'UserManager.rb'
-require_relative 'User.rb'
+require_relative 'UserManager'
+require_relative 'User'
 
 class AuthenticationMiddleware < Sinatra::Base
 
@@ -28,9 +28,9 @@ class AuthenticationMiddleware < Sinatra::Base
       session.delete(:registration_error)
       UserManager.createNewUser(username:  params['email'],
                                 password:  params['password'],
-                                school:    params['school'],
                                 firstName: params['firstName'],
-                                lastName:  params['lastName'])
+                                lastName:  params['lastName'],
+                                realUser:  true)
       redirect('/login')
     end
   end

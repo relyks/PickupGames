@@ -1,0 +1,12 @@
+%html
+  %head
+    %title Most Popular Sport - Pickup Games
+    =haml(:header)
+  %body
+    #content
+      %table
+        - for (sportName, totalGames) in @sportTotals do
+        %tr
+          %td= sportName
+          %td= totalGames
+
