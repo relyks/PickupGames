@@ -116,16 +116,19 @@ class SportsGameManager
                AND g.sportID    = '#{gameInfo.sportID}'
                AND g.skillLevel = '#{gameInfo.skillLevel}';
        )
+    puts 'finding existing game....'
+    puts queryString
     rows = Database.makeQuery(queryString)
     if rows.empty?
       return [false, false, nil]
     else
       gameID = rows[0]['gameID']
       puts gameID
-      return [true, getPlayerCountOf(gameID: gameID) == maxPlayersForGame(gameID: gameID), gameID]
+      return [true, getPlayerCountOf(gameID: gameID) == maxPlayersForGame(gameID: gameID), gameID].tap { |it| puts it }
     end
   end
 
+  # TODO: is the right query?
   def self.getAvailableLocationsAtSameTime(gameInfo:, game:)
     queryString =
       %(
@@ -176,7 +179,7 @@ class SportsGameManager
           FROM   game g
                  INNER JOIN game g2
                          ON g.locationID = g2.locationID
-                            AND g2.gameID = ''#{game.gameID}''
+                            AND g2.gameID = #{game.gameID}
                             AND g.startTime BETWEEN Date_sub(g2.starttime, INTERVAL 3 hour)
                             AND Date_add(g2.starttime,
                                                         INTERVAL 3 hour)
@@ -195,7 +198,9 @@ class SportsGameManager
                         locationID: locationID)
     (matchingGameExists, gameIsFull, gameID) = findExistingGameMatchingCriteria(gameInfo)
     if matchingGameExists
+      puts 'matching game exists'
       if gameIsFull
+        puts 'game is full'
         alternativeLocations = getAvailableLocationsAtSameTime(gameInfo: gameInfo, game: gameID)
         if not alternativeLocations.empty?
           return [
@@ -220,10 +225,12 @@ class SportsGameManager
           end
         end
       else
+        puts 'adding user to game'
         addUserToGame(gameID: gameID, username: username)
         return [gameID, [true, nil]]
       end
     else
+      puts 'creating new game'
       gameID = createNewGame(user: username, gameInformation: gameInfo)
       return [gameID, [true, nil]]
     end

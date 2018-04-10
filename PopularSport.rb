@@ -14,6 +14,6 @@ class PopularSport
             GROUP  BY sportType
             ORDER  BY COUNT(P.gameID) DESC;
         )
-    return Database.makeQuery(queryString).map {}
+    return Database.makeQuery(queryString).map { |row| [row['sportType'], row['numberOfGames']] }
   end
 end

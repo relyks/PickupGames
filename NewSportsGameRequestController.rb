@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require_relative 'Game'
 require_relative 'SportsGameManager'
+require_relative 'PageURLs'
 
 class NewSportsGameRequestController < Sinatra::Base
 
@@ -13,8 +14,8 @@ class NewSportsGameRequestController < Sinatra::Base
       @parameters = session[:form_parameters].map { |key, value| [key.to_sym, value] }.to_h
       session.delete(:form_parameters)
     end
-    @possibleSports     = SportsGameManager.getPossibleSports()
-    @availableLocations = SportsGameManager.getPossibleLocations()
+    @possibleSports     = SportsGameManager.getPossibleSports
+    @availableLocations = SportsGameManager.getPossibleLocations
     haml(:new_game_request)
   end
 
@@ -40,9 +41,9 @@ class NewSportsGameRequestController < Sinatra::Base
     end
   end
 
-  delete('/delete_sports_game_request/game/:gameID') do
-    SportsGameManager.removeGameRequest(username: session[:user],
-                                        gameID:   params[:gameID])
+  delete('/delete_game_request/game/:gameID') do
+    SportsGameManager.removeExistingRequest(username: session[:user],
+                                            gameID:   params[:gameID])
     session[:action_completed] = :DELETION
     redirect('/my_sports_game_requests')
   end
@@ -61,6 +62,6 @@ class NewSportsGameRequestController < Sinatra::Base
                                   skillLevel: gameInfo.skillLevel,
                                   startTime:  gameInfo.startTime,
                                   locationID: gameInfo.locationID }
-    redirect('/new_sports_game_request')
+    redirect(Page::NEW_GAME_REQUEST)
   end
 end

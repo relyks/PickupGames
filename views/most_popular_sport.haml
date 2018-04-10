@@ -4,9 +4,14 @@
     =haml(:header)
   %body
     #content
-      %table
-        - for (sportName, totalGames) in @sportTotals do
-        %tr
-          %td= sportName
-          %td= totalGames
+      %table{class}
+        %thead
+          %tr
+            %th Sport
+            %th Total Number of Games
+        %tbody
+          - for (sportName, totalGames) in @sportTotals do
+            %tr
+              %td= sportName
+              %td= totalGames
 
