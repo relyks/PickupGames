@@ -10,14 +10,18 @@
       - if @firstName != nil
         %strong= "Welcome #{@firstName.capitalize}!"
         %br
-      %table
-        %tr
-          %td
-            %a{href: '/login'} Login
-          %td
-            %a{href: '/logout'} Logout
-        %tr
-          %td
-            %a{href: '/register'} Register
-          %td
-            %a{href: '/all_users'} Users
+      %table{class: 'table'}
+        %tbody
+          %tr
+            %td
+              %a{href: '/login'} Login
+            %td
+              %a{href: '/logout'} Logout
+          %tr
+            %td
+              %a{href: '/register'} Register
+            %td
+              %a{href: '/all_users'} Users
+          %tr
+            %td
+              %a{href: '/actions'} Actions

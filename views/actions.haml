@@ -4,10 +4,9 @@
     =haml(:header)
   %body
     #content
-      %table
-        %tr
-          %td
-            %a{href: '/my_sports_game_requests'} See my requests
-        %tr
-          %td
-            %a{href: '/new_game_request'} Create a new game request
+      %form
+        %button{:formaction => "/new_sports_game_request/"} I want to play a specific sport on a specific day and time
+        %button{:formaction => "/available_games"} Available games to join
+        %button{:formaction => "/my_sports_game_requests"} See or change my games
+        %button{:formaction => "/most_popular_sport"} Get most popular sport
+        %button{:formaction => "/main"} Go back to main page

@@ -4,6 +4,7 @@ require_relative 'ActionsController'
 require_relative 'NewSportsGameRequestController'
 require_relative 'MyGameRequestsController'
 require_relative 'PopularSportController'
+require_relative 'AvailableGamesController'
 
 class PickupGamesApplication < Sinatra::Base
   enable :sessions
@@ -21,6 +22,7 @@ class PickupGamesApplication < Sinatra::Base
   use NewSportsGameRequestController
   use MyGameRequestsController
   use PopularSportController
+  use AvailableGamesController
 
   not_found do
     redirect('/main/not_found')

@@ -4,7 +4,8 @@
     =haml(:header)
   %body
     #content
-      %table{class}
+      %h1 Most Popular Sports
+      %table{class: 'table'}
         %thead
           %tr
             %th Sport
@@ -14,4 +15,15 @@
             %tr
               %td= sportName
               %td= totalGames
-
+      %br
+      %h1 Most Popular Time for a Given Sport
+      %table{class: 'table'}
+        %thead
+          %tr
+            %th Sport
+            %th Time
+        %tbody
+          - for (sportName, time) in @popularTimesBySport do
+            %tr
+              %td= sportName
+              %td= time

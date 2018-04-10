@@ -1,0 +1,70 @@
+- require_relative '../Sport'
+- require_relative '../Game'
+- require_relative '../Database'
+- require_relative '../Location'
+%html
+  %head
+    %title Available Games - Pickup Games
+    =haml(:header)
+  %body
+    #content
+      - if @recentlyJoinedGame != nil
+        %h1= "Successfully joined game requested for #{Sport.getSportName(sportID: @recentlyJoinedGame.sportID)}"
+      %h1 Available Games
+      %form{name: 'filterBySport', method: 'get', action: '/available_games'}
+        %label{for: 'sportID'} Sport Type
+        %select{name: 'filterBySport', id: 'filterBySport'}
+          %option{value: 'none', selected: @currentSportFilter == nil}
+          - for sportType in SportsGameManager.getPossibleSports do
+            - sportID = sportType.split.join('-').downcase
+            - if @currentSportFilter == sportID
+              - @derp = sportType
+              %option{value: sportID, selected: true}= sportType
+            - else
+              %option{value: sportID}= sportType
+        %input{type: 'submit', value: 'Filter by sport'}
+      %br
+      :ruby
+        if @currentSportFilter == nil
+          @games = @availableGames
+        else
+          queryString = "select P.gameID, count(*) As currentPlayers, numberOfPlayers, sportType from plays P, Sport S, Game G where P.gameID=G.gameID AND S.sportID=G.sportID AND sportType='#{@derp}' group by P.gameID having count(*)<numberOfPlayers;"
+          resultArray = Database.makeQuery(queryString)
+          availableGames = resultArray.map { |row|
+              [
+            row['gameID'],
+            Game.findBy(gameID: row['gameID']),
+            row['numberOfPlayers'] - row['currentPlayers']
+            ]
+            }
+            @games = availableGames.map { |gameID, game, playersNeeded|
+              { sport:    Sport.getSportName(sportID: game.sportID),
+              level:    game.skillLevel.capitalize,
+              time:     game.startTime,
+              location: Location.getLocationName(locationID: game.locationID),
+              gameID: gameID,
+              playersNeeded: playersNeeded
+              }
+            }.sort_by { |game| game[:time] }
+        end
+      %table{class: 'table'}
+        %thead
+          %tr
+            %th Sport
+            %th Level
+            %th Location
+            %th Time
+            %th Players needed
+            %th Join?
+        %tbody
+          - for game in @games do
+            %tr
+              %td= game[:sport]
+              %td= game[:level]
+              %td= game[:location]
+              %td= game[:time].strftime('%A, %b %d - %l:00 %p')
+              %td= game[:playersNeeded].to_s
+              %td
+                %a{href: "/join_game?#{URI.encode_www_form({gameID: game[:gameID]})}"} Join Game
+        %br
+        %br

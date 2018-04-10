@@ -40,7 +40,7 @@ class AuthenticationMiddleware < Sinatra::Base
                                          password: params['password'])
       session[:user] = params['email']
       session.delete(:login_invalid)
-      path = '/all_users'
+      path = '/main'
       if session.has_key?(:requested_path)
         path = session[:requested_path]
         session.delete(:requested_path)
