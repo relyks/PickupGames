@@ -116,15 +116,12 @@ class SportsGameManager
                AND g.sportID    = '#{gameInfo.sportID}'
                AND g.skillLevel = '#{gameInfo.skillLevel}';
        )
-    puts 'finding existing game....'
-    puts queryString
     rows = Database.makeQuery(queryString)
     if rows.empty?
       return [false, false, nil]
     else
       gameID = rows[0]['gameID']
-      puts gameID
-      return [true, getPlayerCountOf(gameID: gameID) == maxPlayersForGame(gameID: gameID), gameID].tap { |it| puts it }
+      return [true, getPlayerCountOf(gameID: gameID) == maxPlayersForGame(gameID: gameID), gameID]
     end
   end
 
@@ -132,20 +129,10 @@ class SportsGameManager
   def self.getAvailableLocationsAtSameTime(gameInfo:, game:)
     queryString =
       %(
-         SELECT DISTINCT l.locationName
-         FROM   Location l
-           INNER JOIN canHost c
-                   ON c.locationID = l.locationID
-           INNER JOIN Sport s
-                   ON s.sportID = c.sportID
-           INNER JOIN game g1
-                   ON g1.sportID = s.sportID
-        WHERE  g1.gameID = '#{game}'
-               AND l.locationID NOT IN (SELECT g3.locationID
-                                        FROM   game g3
-                                               INNER JOIN plays p
-                                                       ON g3.gameID = p.gameID
-                                        WHERE  g3.startTime = g1.startTime);
+      select locationID
+      from canHost C
+      where C.sportID in (select sportID from Game where gameID= '#{game}')
+       and locationID Not in (select G2.locationID from Game G, Game G2 where G.startTime=G2.startTime and G.gameID='#{game}');
        )
     return Database.makeQuery(queryString).map { |row| row['locationName'] }
   end
@@ -175,15 +162,15 @@ class SportsGameManager
   def self.getAvailableTimesAtSameLocation(gameInfo:, game:)
     queryString =
       %(
-         SELECT g.starttime
-          FROM   game g
-                 INNER JOIN game g2
+         SELECT g.startTime
+          FROM   Game g
+                 INNER JOIN Game g2
                          ON g.locationID = g2.locationID
                             AND g2.gameID = #{game.gameID}
-                            AND g.startTime BETWEEN Date_sub(g2.starttime, INTERVAL 3 hour)
-                            AND Date_add(g2.starttime,
+                            AND g.startTime BETWEEN Date_sub(g2.startTime, INTERVAL 3 hour)
+                            AND Date_add(g2.startTime,
                                                         INTERVAL 3 hour)
-                  AND NOT g.gameid = g2.gameid;
+                  AND NOT g.gameID = g2.gameID;
        )
     return Database.makeQuery(queryString).map { |row| row['startTime'] }
   end
@@ -198,9 +185,7 @@ class SportsGameManager
                         locationID: locationID)
     (matchingGameExists, gameIsFull, gameID) = findExistingGameMatchingCriteria(gameInfo)
     if matchingGameExists
-      puts 'matching game exists'
       if gameIsFull
-        puts 'game is full'
         alternativeLocations = getAvailableLocationsAtSameTime(gameInfo: gameInfo, game: gameID)
         if not alternativeLocations.empty?
           return [
@@ -225,12 +210,10 @@ class SportsGameManager
           end
         end
       else
-        puts 'adding user to game'
         addUserToGame(gameID: gameID, username: username)
         return [gameID, [true, nil]]
       end
     else
-      puts 'creating new game'
       gameID = createNewGame(user: username, gameInformation: gameInfo)
       return [gameID, [true, nil]]
     end

@@ -1,0 +1,9 @@
+To run the project, ruby 2.3 needs to be installed.
+A root user for the database needs to be made.
+The password for the root user to access the database needs to be included in a password.txt file.
+The gems need to be installed, run: "sudo gem install sinatra humanhash mysql2"
+Data needs to be loaded into the database.
+To insert the data into your database, load the table_creation.sql file first before loading the data.sql file.
+"mysql -u root -p < table_creation.sql"
+"mysql -u root -p < data.sql"
+Finally, the application can be run: "sudo ruby PickupGames.rb"

@@ -17,8 +17,6 @@ class Game
     queryString = "SELECT * FROM Game g WHERE g.gameID = '#{gameID}';"
     resultArray = Database.makeQuery(queryString)
     values = resultArray[0]
-    puts values['startTime']
-    puts Time.strptime(values['startTime'].to_s, '%Y-%m-%d %H:00:00')
     return self.new(sportID:   values['sportID'],
                     skillLevel: values['skillLevel'],
                     startTime:  Time.strptime(values['startTime'].to_s, '%Y-%m-%d %H:00:00'),
